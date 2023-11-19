@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 
 import ProductForm from './ProductForm'
 import ProductList from './ProductList'
@@ -6,6 +6,11 @@ import Search from './Search'
 
 const Products = () => {
   const [products, setProducts] = useState([])
+
+
+  const searchProductsHandler = useCallback((items) => {
+    setProducts(items)
+  }, [])
 
 
   const addProductHandler = (item) => {
@@ -27,8 +32,6 @@ const Products = () => {
         })
     })
 
-
-    
   }
 
 
@@ -38,12 +41,13 @@ const Products = () => {
       <ProductForm onAddProduct={addProductHandler} />
 
       <section>
-        <Search />
+        <Search onLoadProducts={searchProductsHandler} />
         <ProductList products={products} onRemoveItem={() => {}} />
       </section>
     </div>
   )
 }
+
 
 export default Products
 
