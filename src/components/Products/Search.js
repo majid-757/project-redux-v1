@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 import Card from '../UI/Card'
 
@@ -7,32 +7,40 @@ import './Search.css'
 const Search = React.memo((props) => {
   const { onLoadProducts } = props
   const [searchItem, setSearchItem] = useState('')
+  const inputRef = useRef()
 
   useEffect(() => {
 
-    const query = searchItem.length === 0 ? '' : 
-      `?orderBy="title"&equalTo="${searchItem}"`
+    setTimeout(() => {
 
-    fetch('https://test22-d8e86-default-rtdb.asia-southeast1.firebasedatabase.app/products.json' + query)
-      .then((response) => {
-        return response.json()
-      })
-      .then((responseData) => {
-        const loadedProducts = []
+      if(searchItem === inputRef.current.value)  {
 
-        for (const item in responseData) {
-          loadedProducts.push({
-            id: item,
-            title: responseData[item].title,
-            amount: responseData[item].amount
+        const query = searchItem.length === 0 ? '' : 
+        `?orderBy="title"&equalTo="${searchItem}"`
+  
+        fetch('https://test22-d8e86-default-rtdb.asia-southeast1.firebasedatabase.app/products.json' + query)
+          .then((response) => {
+            return response.json()
           })
-        }
+          .then((responseData) => {
+            const loadedProducts = []
+  
+            for (const item in responseData) {
+              loadedProducts.push({
+                id: item,
+                title: responseData[item].title,
+                amount: responseData[item].amount
+              })
+            }
+  
+            onLoadProducts(loadedProducts)
+  
+          })
+      }
+    }, 500)
 
-        onLoadProducts(loadedProducts)
 
-      })
-
-  }, [searchItem, onLoadProducts])
+  }, [searchItem, onLoadProducts, inputRef])
 
 
 
@@ -41,7 +49,9 @@ const Search = React.memo((props) => {
       <Card>
         <div className="search-input">
           <label>جست و جو</label>
-          <input type="text" 
+          <input 
+          ref={inputRef}
+          type="text" 
           value={searchItem} 
           onChange={(event) => setSearchItem(event.target.value)} 
           
